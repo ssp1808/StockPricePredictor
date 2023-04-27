@@ -10,25 +10,42 @@ address = "E:\Learning\Python\StockPricePredictor\HistData.csv"
 df = pd.read_csv(address)
 df.columns=['Sr','Date','Open','High','Low','Close','AdjClose','Volume']
 df  = df.dropna()
-# df  =  df[df['id'].apply(lambda x: is_float(x))]
 
+#Pre-Process the data
 df = df[~(df['Volume'] == 0)] # remove outliers
 df = df.drop('Date', axis=1) 
-df = df[df["Open"].str.contains("Dividend")==False]
+df = df[~df["Open"].str.contains("Dividend")] # remove rows containing "Dividend" in the "Open" column
 
 df = df.iloc[:98,:]
-print(df.head)
 model = LinearRegression() 
 
 #Split the data
 X = df.drop('Close', axis=1)
 y = df['Close']
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.5)
 
 #Fitting the model
-
 model.fit(X_train,y_train)
 result = model.predict(X_test)
 
 #Check result
-print('Mean Squared Error = ', mean_squared_error(y_test,result))
+y_test = pd.DataFrame((y_test)).reset_index(drop=True)
+y_test = y_test.astype(float)
+
+result = pd.DataFrame(result)
+result.columns=['Close']
+y_test.columns=['Close']
+
+print(y_test)
+print(result)
+y_test.sort_index(ascending=True)
+plt.plot(y_test['Close'],label='Actual')
+plt.plot(result['Close'],label='Predicted')
+
+
+plt.title('AAPL Stock Price')
+plt.xlabel('Date')
+plt.ylabel('Price')
+plt.legend()
+plt.show()
+
