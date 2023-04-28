@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
+from sklearn.metrics import r2_score
 from sklearn.model_selection import train_test_split
 
 address = "E:\Learning\Python\StockPricePredictor\HistData.csv"
@@ -27,6 +28,11 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.5)
 #Fitting the model
 model.fit(X_train,y_train)
 result = model.predict(X_test)
+
+mse = mean_squared_error(y_test, result)
+print('Mean Squared Error:', mse)
+RSq = r2_score(y_test, result)
+print('R2 score:', RSq)
 
 #Check result
 y_test = pd.DataFrame((y_test)).reset_index(drop=True)
